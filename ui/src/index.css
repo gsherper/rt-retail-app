@@ -11,11 +11,11 @@
   --shadow:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --sans: 'Inter Variable', system-ui, 'Segoe UI', Roboto, sans-serif;
+  --heading: 'Inter Variable', system-ui, 'Segoe UI', Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
 
-  font: 18px/145% var(--sans);
+  font: 12px/145% var(--sans);
   letter-spacing: 0.18px;
   color-scheme: light dark;
   color: var(--text);
@@ -24,10 +24,6 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
 }
 
 @media (prefers-color-scheme: dark) {
@@ -108,4 +104,58 @@ code {
   line-height: 135%;
   padding: 4px 8px;
   background: var(--code-bg);
+}
+
+.app-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Full-height layout: header and footer fixed, content fills the rest */
+.app-layout {
+  height: 100svh;
+}
+
+.app-content,
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.page,
+.page-grid {
+  flex: 1;
+  min-height: 0;
+}
+
+.page-grid {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+/* Square off the grid's bottom corners so the status bar attaches flush */
+.page-grid .ag-root-wrapper {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+/* Draw zebra rows in the empty space below the data so the grid looks filled */
+.page-grid .ag-grid-scrolling-rows {
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent calc(var(--ag-row-height) - 1px),
+      var(--ag-border-color) calc(var(--ag-row-height) - 1px),
+      var(--ag-border-color) var(--ag-row-height)
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent var(--ag-row-height),
+      var(--ag-odd-row-background-color) var(--ag-row-height),
+      var(--ag-odd-row-background-color) calc(var(--ag-row-height) * 2)
+    );
 }

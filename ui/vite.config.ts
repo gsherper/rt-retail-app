@@ -8,9 +8,9 @@ const apiTarget = 'http://localhost:5000'
 export default defineConfig({
   plugins: [react()],
   server: {
-    // Same-origin requests in dev, so the app can use relative URLs
+    // Same-origin in dev, so the app can use a relative URL. Only the hub:
+    // the UI never calls the server's REST API (/api is for debugging)
     proxy: {
-      '/api': apiTarget,
       '/ws': { target: apiTarget, ws: true },
     },
   },

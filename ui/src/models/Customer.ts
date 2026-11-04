@@ -1,6 +1,8 @@
 export interface Customer {
-  customerId: string
+  customerID: number
   firstName: string
-  middleInitial?: string
+  middleInitial?: string | null
   lastName: string
+  //used to detect concurrent edits
+  version: number
 }

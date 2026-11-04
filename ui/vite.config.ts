@@ -11,7 +11,8 @@ export default defineConfig({
     // Same-origin in dev, so the app can use a relative URL. Only the hub:
     // the UI never calls the server's REST API (/api is for debugging)
     proxy: {
-      '/ws': { target: apiTarget, ws: true },
+      // ws: true also proxies the WebSocket upgrade, not just /hub/negotiate
+      '/hub': { target: apiTarget, ws: true },
     },
   },
 })

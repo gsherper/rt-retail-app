@@ -1,0 +1,45 @@
+.header {
+  display: flex;
+  align-items: center;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.nav {
+  display: flex;
+  gap: 16px;
+  margin-left: 32px;
+}
+
+.navLink {
+  color: #fff;
+  opacity: 0.75;
+}
+
+.navLink:hover,
+.active {
+  color: #fff;
+  opacity: 1;
+}
+
+.active {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.repoLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  color: #fff;
+  opacity: 0.85;
+}
+
+.repoLink:hover {
+  color: #fff;
+  opacity: 1;
+}

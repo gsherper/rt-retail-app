@@ -1,0 +1,39 @@
+# nginx site for the UI container. ${HUB_UPSTREAM} is filled in from the
+# environment when the container starts (see Dockerfile)
+
+# WebSocket upgrade: pass "upgrade" when the browser asks for it, else close
+map $http_upgrade $connection_upgrade {
+  default upgrade;
+  ''      close;
+}
+
+server {
+  # Same port as `pnpm dev` (vite.config.ts) and the host port in compose.yml
+  listen 5000;
+  root /usr/share/nginx/html;
+
+  # SignalR hub: negotiate (HTTP) and the WebSocket itself
+  location /hub {
+    proxy_pass ${HUB_UPSTREAM};
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $connection_upgrade;
+    proxy_set_header Host $host;
+    # Keep idle connections open; SignalR sends its own keep-alive pings
+    proxy_read_timeout 1h;
+    proxy_buffering off;
+  }
+
+  # Vite's hashed build files never change, so cache them for good
+  location /assets/ {
+    try_files $uri =404;
+    add_header Cache-Control "public, max-age=31536000, immutable";
+  }
+
+  # Client-side routes (/orders etc.) all load index.html; never cache it,
+  # so a new build is picked up straight away
+  location / {
+    try_files $uri /index.html;
+    add_header Cache-Control "no-cache";
+  }
+}

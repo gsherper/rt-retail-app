@@ -1,9 +1,9 @@
 Realtime Customer Management App Demo
 
-pnpm dev to start running on localhost:5173
+pnpm dev to start running on localhost:5000
 
-The UI expects the server to be running on localhost:5000
-vite dev server proxy the /hub SignalR Websocket requests to localhost:5000
+The UI expects the server to be running on localhost:5001
+vite dev server proxy the /hub SignalR Websocket requests to localhost:5001
 
 All data over one single Websocket.
 Data CRUD operations flow through Websocket.

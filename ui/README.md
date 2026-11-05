@@ -1,32 +1,20 @@
-# React + TypeScript + Vite
+Realtime Customer Management App Demo
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+pnpm dev to start running on localhost:5173
 
-Currently, two official plugins are available:
+The UI expects the server to be running on localhost:5000
+vite dev server proxy the /hub SignalR Websocket requests to localhost:5000
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+All data over one single Websocket.
+Data CRUD operations flow through Websocket.
+Changes are any data cell will appear on screen and grid cell will flash
 
-## React Compiler
+Customer List page, when new customers are added it will appear at the beginning fo the grid if CustomerID is sort DESC
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Double-clicking on customer row will take you to the Order list page filtered to that specific customer. Adding orders will prefill the customer detail in the order form.
 
-## Expanding the Oxlint configuration
+Order List page, when new orders are added it will appear at the beginning fo the grid if OrderID is sort DESC
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+All order form creation will prepopulate with default Sales Person DEFAULT_SALES_PERSON_ID 127 "David Cheung", but it can be changed by the user when they fill out the form.
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
-
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+If at any time another user is using the app changes a customer name and you have an order form in progress, the customer name will update.

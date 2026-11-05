@@ -22,6 +22,13 @@ open browser right away.
   reconnects on its own.
 
 
+# Improvements that can be made:
+- Add infinite scrolling feature if there are large datasets
+  - Add pagination through websocket along with subscription only for updates of orders or customers in the view. Also subscribe to new records.
+
+- Add Postgres to persist records 
+
+
 ## Run locally
 
 You need the .NET 10 SDK, Node.js 24 and pnpm.

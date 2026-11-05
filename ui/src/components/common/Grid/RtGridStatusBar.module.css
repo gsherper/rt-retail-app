@@ -1,0 +1,15 @@
+.statusBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 32px;
+  padding: 6px 12px;
+  background: #f8f8f8;
+  border: 1px solid #e0e0e0;
+  border-top: none;
+  /* The grid's CSS variable isn't in scope here, so fall back to Quartz's 8px default */
+  border-bottom-left-radius: var(--ag-wrapper-border-radius, 8px);
+  border-bottom-right-radius: var(--ag-wrapper-border-radius, 8px);
+  font-size: 13px;
+  color: #666;
+}

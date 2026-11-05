@@ -1,0 +1,41 @@
+.root {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  text-align: left;
+}
+
+.gridArea {
+  flex: 1;
+  min-height: 0;
+}
+
+/* edit and delete buttons fill cell */
+.root :global(.ag-cell).actionsCell {
+  padding: 0;
+}
+
+.root :global(.ag-root-wrapper) {
+  border-radius: 0;
+}
+
+/* add empty rows to fill screen */
+.root :global(.ag-grid-scrolling-rows) {
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent calc(var(--ag-row-height) - 1px),
+      var(--ag-border-color) calc(var(--ag-row-height) - 1px),
+      var(--ag-border-color) var(--ag-row-height)
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent var(--ag-row-height),
+      var(--ag-odd-row-background-color) var(--ag-row-height),
+      var(--ag-odd-row-background-color) calc(var(--ag-row-height) * 2)
+    );
+}

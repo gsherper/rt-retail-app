@@ -24,7 +24,7 @@ open browser right away.
 
 # Improvements that can be made:
 - Add infinite scrolling feature if there are large datasets
-  - Add pagination through websocket along with subscription only for updates of orders or customers in the view. Also subscribe to new records.
+  - Add pagination through websocket along with subscription only for updates of orders or customers in the view based on the user's filter.
 
 - Add Postgres to persist records 
 

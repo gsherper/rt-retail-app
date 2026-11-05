@@ -1,0 +1,17 @@
+services:
+  server:
+    # Listens on port 5001 (set in server/Dockerfile); the ui container proxies /hub to it
+    build: ./server
+    expose:
+      - '5001'
+
+  ui:
+    build: ./ui
+    # Open http://localhost:5000
+    ports:
+      - '5000:5000'
+    environment:
+      # Where nginx proxies /hub; change it if the server listens elsewhere
+      HUB_UPSTREAM: http://server:5001
+    depends_on:
+      - server

@@ -15,10 +15,14 @@ export interface RTInputField<T> {
   type?: 'text' | 'number' | 'select'
   // Used for middle initials
   maxLength?: number
+  // number fields only: whole numbers only (quantity), we need min and precision
+  min?: number
+  precision?: number
+  // dropdown options
   options?: { value: string; label: string }[]
 }
 
-// This is ussed for read only field
+// This is used for read only field
 export interface RTDisplayField<T> {
   key: string
   label: string
@@ -32,7 +36,14 @@ function renderInput<T>(field: RTInputField<T>) {
   if (field.input) return cloneElement(field.input(), { disabled })
   switch (field.type) {
     case 'number':
-      return <InputNumber disabled={disabled} style={{ width: '100%' }} />
+      return (
+        <InputNumber
+          min={field.min}
+          precision={field.precision}
+          disabled={disabled}
+          style={{ width: '100%' }}
+        />
+      )
     case 'select':
       return <Select options={field.options} disabled={disabled} />
     default:

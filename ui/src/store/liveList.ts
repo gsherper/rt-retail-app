@@ -40,17 +40,34 @@ export function createLiveList<T extends { version: number }, A = void>({
       `Could not load ${name}`,
     )
 
-  // Update only if version number isn't older
-  function applyChange(rows: T[], change: ChangeEvent<T>, arg: A) {
+  // Update only if version number isn't older.
+  // deleted: deleted row ID → the version it was deleted at.
+  // Events can arrive out of order, example: an update published just before a
+  // delete but delivered after it...that update would add the
+  // deleted row back
+  function applyChange(
+    rows: T[],
+    change: ChangeEvent<T>,
+    arg: A,
+    deleted: Map<number, number>,
+  ) {
     const index = rows.findIndex((row) => getId(row) === change.id)
     switch (change.type) {
       case 'created':
-      case 'updated':
+      case 'updated': {
         if (belongs && !belongs(change.data, arg)) break
+        // Older than (or the same as) the row's delete: it's stale, drop it
+        const deletedAt = deleted.get(change.id)
+        if (deletedAt !== undefined && change.version <= deletedAt) break
         if (index === -1) rows.push(change.data)
         else if (change.version > rows[index].version) rows[index] = change.data
         break
+      }
       case 'deleted':
+        deleted.set(
+          change.id,
+          Math.max(change.version, deleted.get(change.id) ?? change.version),
+        )
         if (index !== -1) rows.splice(index, 1)
         break
       default:
@@ -79,9 +96,11 @@ export function createLiveList<T extends { version: number }, A = void>({
       // changes until there's data to apply them to
       const pending: ChangeEvent<T>[] = []
       let loaded = false
+      // Rows deleted while this list is in use; see applyChange
+      const deleted = new Map<number, number>()
 
       const apply = (change: ChangeEvent<T>) =>
-        update((rows) => applyChange(rows, change, arg))
+        update((rows) => applyChange(rows, change, arg, deleted))
 
       // clean up listeners list
       const removeListeners = [

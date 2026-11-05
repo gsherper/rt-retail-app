@@ -16,6 +16,7 @@ export const orderColumnDefs: ColDef<Order>[] = [
     headerName: 'Order',
     type: 'rightAligned',
     width: 100,
+    sort: 'desc',
   },
   {
     colId: 'customer',

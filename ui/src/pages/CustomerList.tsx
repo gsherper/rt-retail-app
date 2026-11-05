@@ -54,6 +54,7 @@ export function CustomerList() {
         formFields={customerFormFields}
         describe={describeCustomer}
         searchPlaceholder="Search name…"
+        sortStorageKey="customers"
         connectionStatus={connectionStatus}
         // Double-click opens the customer orders list
         onRowDoubleClick={openOrders}

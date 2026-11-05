@@ -6,7 +6,7 @@ import type { Customer } from '../models/Customer'
 // Grid and form definitions for the customer list page
 
 export const customerColumnDefs: ColDef<Customer>[] = [
-  { field: 'customerID', type: 'rightAligned', width: 110 },
+  { field: 'customerID', type: 'rightAligned', width: 110, sort: 'desc' },
   { field: 'firstName', flex: 1 },
   { field: 'middleInitial', flex: 1 },
   { field: 'lastName', flex: 1 },

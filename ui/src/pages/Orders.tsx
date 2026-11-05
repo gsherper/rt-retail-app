@@ -41,8 +41,10 @@ export function Orders() {
   })
 
   const { data, isLoading } = customerId === null ? allOrders : customerOrders
-  // Prices for the form's total
+
+  // Subscribe to product updates / get product list
   const { data: products } = useGetProductsQuery()
+
   const connectionStatus = useAppSelector(selectHubStatus)
 
   const [addOrder] = useAddOrderMutation()
@@ -100,6 +102,7 @@ export function Orders() {
         newRowValues={newOrderValues}
         describe={describeOrder}
         searchPlaceholder="Search orders…"
+        sortStorageKey="orders"
         connectionStatus={connectionStatus}
         // The grid updates when the server pushes the change, not from the responses
         onAdd={(values) => addOrder(values as OrderFormValues).unwrap()}

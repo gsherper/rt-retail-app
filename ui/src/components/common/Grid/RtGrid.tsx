@@ -5,9 +5,12 @@ import { useState, useCallback, useMemo } from 'react'
 
 import type {
   CellDoubleClickedEvent,
+  ColumnState,
   GetRowIdParams,
+  GridReadyEvent,
   ModelUpdatedEvent,
   RowSelectionOptions,
+  SortChangedEvent,
 } from 'ag-grid-community'
 import styles from './RtGrid.module.css'
 import { RtGridStatusBar } from './RtGridStatusBar'
@@ -47,6 +50,28 @@ const rowSelection: RowSelectionOptions = {
 
 type EditState<T> = { mode: 'add' } | { mode: 'edit'; row: T } | null
 
+// Saved sort: which columns are sorted, which way, and in what order.
+type SavedSort = Pick<ColumnState, 'colId' | 'sort' | 'sortIndex'>[]
+
+const sortStorageKey = (key: string) => `rtGrid.sort.${key}`
+
+function loadSort(key: string): SavedSort | null {
+  try {
+    const saved = localStorage.getItem(sortStorageKey(key))
+    return saved === null ? null : (JSON.parse(saved) as SavedSort)
+  } catch {
+    return null
+  }
+}
+
+function saveSort(key: string, sort: SavedSort) {
+  try {
+    localStorage.setItem(sortStorageKey(key), JSON.stringify(sort))
+  } catch {
+    // Not saved; the next visit uses the default sort
+  }
+}
+
 export interface RtGridProps<T extends object, F extends object = T> {
   title: string
   entityName: string
@@ -56,10 +81,12 @@ export interface RtGridProps<T extends object, F extends object = T> {
   getRowId: (row: T) => string
   formFields: RTFormField<F>[]
   toFormValues?: (row: T) => Partial<F>
-  /** The add form's starting values, e.g. the customer when on one customer's orders */
+  // The add form's starting values if form is opened from customer's orders list page
   newRowValues?: Partial<F>
   describe?: (row: T) => string
   searchPlaceholder?: string
+  //User's sort in localStorage under sortStorageKey
+  sortStorageKey?: string
   connectionStatus?: ConnectionStatus
   onRowDoubleClick?: (row: T) => void
   onAdd: (values: Partial<F>) => unknown
@@ -79,6 +106,7 @@ export function RtGrid<T extends object, F extends object = T>({
   newRowValues,
   describe,
   searchPlaceholder,
+  sortStorageKey,
   connectionStatus,
   onRowDoubleClick,
   onAdd,
@@ -123,6 +151,31 @@ export function RtGrid<T extends object, F extends object = T>({
   const gridGetRowId = useCallback(
     (params: GetRowIdParams<T>) => getRowId(params.data),
     [getRowId],
+  )
+
+  // Restore the sort saved on a previous visit; it replaces the default sort
+  const onGridReady = useCallback(
+    ({ api }: GridReadyEvent<T>) => {
+      if (!sortStorageKey) return
+      const saved = loadSort(sortStorageKey)
+      if (saved) {
+        api.applyColumnState({ state: saved, defaultState: { sort: null } })
+      }
+    },
+    [sortStorageKey],
+  )
+
+  // Save the sort whenever it changes (clicking a header)
+  const onSortChanged = useCallback(
+    ({ api }: SortChangedEvent<T>) => {
+      if (!sortStorageKey) return
+      const sorted = api
+        .getColumnState()
+        .filter((column) => column.sort)
+        .map(({ colId, sort, sortIndex }) => ({ colId, sort, sortIndex }))
+      saveSort(sortStorageKey, sorted)
+    },
+    [sortStorageKey],
   )
 
   const onModelUpdated = useCallback((params: ModelUpdatedEvent) => {
@@ -185,6 +238,8 @@ export function RtGrid<T extends object, F extends object = T>({
           onCellDoubleClicked={onCellDoubleClicked}
           rowSelection={rowSelection}
           onModelUpdated={onModelUpdated}
+          onGridReady={onGridReady}
+          onSortChanged={onSortChanged}
         />
       </div>
       <RtGridStatusBar

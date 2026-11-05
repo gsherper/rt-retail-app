@@ -9,7 +9,7 @@ public static class OrderEndpoints
 
     public static RouteGroupBuilder MapOrderEndpoints(this RouteGroupBuilder api)
     {
-        // Listing and creating are per customer, matching the customer:{id}:orders topic
+        // Per customer, like the customer:{id}:orders topic
         var customerOrders = api.MapGroup("/customers/{customerId:int}/orders").WithTags("Orders");
 
         // The same list SubscribeCustomerOrders returns
@@ -34,7 +34,6 @@ public static class OrderEndpoints
             };
         });
 
-        // All orders, and a single order by its own ID
         var orders = api.MapGroup("/orders").WithTags("Orders");
 
         // The same list SubscribeOrders returns
@@ -64,7 +63,7 @@ public static class OrderEndpoints
             };
         });
 
-        // ?version= is optional; when sent, the delete only happens if it still matches
+        // Optional ?version=: deletes only if it still matches
         orders.MapDelete("/{orderId:int}", async Task<Results<NoContent, NotFound, ProblemHttpResult>> (
             int orderId, long? version, OrderService service, CancellationToken ct) =>
             await service.DeleteAsync(orderId, version, ct) switch

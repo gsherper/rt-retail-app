@@ -8,9 +8,8 @@ public static class ChangeTypes
 }
 
 /// <summary>
-/// Envelope for every pushed change. Data is the same DTO the REST endpoint
-/// returns for that resource, and null for deletes. Clients compare Version with
-/// the row they have to drop stale or duplicate events.
+/// A pushed change. Data is the resource's DTO, null for deletes. Clients use Version to
+/// drop stale or duplicate events.
 /// </summary>
 public sealed record ChangeEvent<T>(string Type, int Id, long Version, T? Data)
 {

@@ -1,6 +1,6 @@
 namespace Dashboard.Api.Features.Customers;
 
-/// <summary>Makes up customer details for demos and for testing live updates.</summary>
+/// <summary>Made-up customers for demos.</summary>
 internal static class RandomCustomer
 {
     private static readonly string[] FirstNames =
@@ -21,7 +21,7 @@ internal static class RandomCustomer
     {
         var random = Random.Shared;
 
-        // About a third of customers have no middle initial, like the seed data
+        // A third have no middle initial, like the seed data
         var middleInitial = random.Next(3) == 0
             ? null
             : ((char)('A' + random.Next(26))).ToString();

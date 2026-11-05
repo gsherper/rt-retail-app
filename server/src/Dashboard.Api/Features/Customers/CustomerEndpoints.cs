@@ -47,7 +47,7 @@ public static class CustomerEndpoints
             };
         });
 
-        // ?version= is optional; when sent, the delete only happens if it still matches
+        // Optional ?version=: deletes only if it still matches
         customers.MapDelete("/{customerId:int}", async Task<Results<NoContent, NotFound, ProblemHttpResult>> (
             int customerId, long? version, CustomerService service, CancellationToken ct) =>
             await service.DeleteAsync(customerId, version, ct) switch
@@ -57,7 +57,7 @@ public static class CustomerEndpoints
                 _ => ProblemResults.Conflict(EntityName),
             });
 
-        // Demo helper: adds a customer with a made-up name, pushed like any other add
+        // Demo helper: adds a made-up customer
         customers.MapPost("/random", async Task<Created<CustomerDto>> (
             CustomerService service, CancellationToken ct) =>
         {

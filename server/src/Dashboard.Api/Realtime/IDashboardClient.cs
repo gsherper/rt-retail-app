@@ -11,10 +11,7 @@ public interface IDashboardClient
     /// <summary>Sent to <see cref="Topics.Customers"/>.</summary>
     Task CustomerChanged(ChangeEvent<CustomerDto> change);
 
-    /// <summary>
-    /// Sent to <see cref="Topics.Orders"/> and to <see cref="Topics.CustomerOrders"/>
-    /// for the order's customer.
-    /// </summary>
+    /// <summary>Sent to <see cref="Topics.Orders"/> and the order's <see cref="Topics.CustomerOrders"/>.</summary>
     Task OrderChanged(ChangeEvent<OrderDto> change);
 
     /// <summary>Sent to <see cref="Topics.Employees"/>.</summary>

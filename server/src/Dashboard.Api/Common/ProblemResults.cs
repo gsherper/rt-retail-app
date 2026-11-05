@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Dashboard.Api.Common;
 
+/// <summary>REST 409s; <c>HubError</c> reuses the details.</summary>
 public static class ProblemResults
 {
     public static string ConflictDetail(string entityName) =>
@@ -21,22 +22,4 @@ public static class ProblemResults
             statusCode: StatusCodes.Status409Conflict,
             title: "In use",
             detail: InUseDetail(entityName));
-}
-
-public static class EndpointExtensions
-{
-    /// <summary>
-    /// Marks responses as never cacheable. Data here changes live, so browsers and
-    /// proxies must not reuse an earlier response.
-    /// </summary>
-    public static TBuilder DisableHttpCaching<TBuilder>(this TBuilder builder)
-        where TBuilder : IEndpointConventionBuilder
-    {
-        builder.AddEndpointFilter(async (context, next) =>
-        {
-            context.HttpContext.Response.Headers.CacheControl = "no-store";
-            return await next(context);
-        });
-        return builder;
-    }
 }

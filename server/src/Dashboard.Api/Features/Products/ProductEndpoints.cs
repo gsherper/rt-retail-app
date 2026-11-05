@@ -47,7 +47,7 @@ public static class ProductEndpoints
             };
         });
 
-        // ?version= is optional; when sent, the delete only happens if it still matches
+        // Optional ?version=: deletes only if it still matches
         products.MapDelete("/{productId:int}", async Task<Results<NoContent, NotFound, ProblemHttpResult>> (
             int productId, long? version, ProductService service, CancellationToken ct) =>
             await service.DeleteAsync(productId, version, ct) switch

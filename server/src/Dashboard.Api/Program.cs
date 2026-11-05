@@ -20,11 +20,12 @@ builder.Services.AddCors(options =>
               .AllowCredentials());
 });
 
+builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
 builder.Services.AddHealthChecks();
 builder.Services.AddSignalR(options => options.EnableDetailedErrors = builder.Environment.IsDevelopment());
 
-// All data lives here for the app's lifetime and resets on restart; see InMemoryDataStore
+// In memory only; resets on restart
 builder.Services.AddSingleton<InMemoryDataStore>();
 builder.Services.AddSingleton<IChangePublisher, ChangePublisher>();
 builder.Services.AddScoped<CustomerService>();
@@ -37,6 +38,13 @@ var app = builder.Build();
 app.UseExceptionHandler();
 app.UseStatusCodePages();
 app.UseCors();
+
+// Swagger for the REST endpoints (not the hub), Development only
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+    app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "Dashboard API v1"));
+}
 
 var api = app.MapGroup("/api").DisableHttpCaching();
 api.MapGet("/hello", () => Results.Ok(new { message = "Hello, World!" }));

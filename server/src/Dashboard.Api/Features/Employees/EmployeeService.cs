@@ -11,7 +11,6 @@ public sealed class EmployeeService(
     IChangePublisher publisher,
     ILogger<EmployeeService> logger)
 {
-    /// <summary>Every employee, sorted by ID: the hub subscribe's initial list and the REST list.</summary>
     public Task<IReadOnlyList<EmployeeDto>> GetAllAsync(CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
@@ -84,10 +83,7 @@ public sealed class EmployeeService(
         return WriteResult<EmployeeDto>.Ok(updated);
     }
 
-    /// <summary>
-    /// In use when any order names this employee as its sales person. When
-    /// expectedVersion is given and doesn't match, the result is a conflict.
-    /// </summary>
+    /// <summary>InUse while any order uses this employee. Conflict when expectedVersion is given and doesn't match.</summary>
     public async Task<WriteStatus> DeleteAsync(int employeeId, long? expectedVersion, CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();

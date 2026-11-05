@@ -2,7 +2,7 @@ using Dashboard.Api.Data.Entities;
 
 namespace Dashboard.Api.Data;
 
-/// <summary>The starting data <see cref="InMemoryDataStore"/> loads each time the server starts.</summary>
+/// <summary>Loaded on every start.</summary>
 internal static class SeedData
 {
     public const int FirstOrderId = 5001;
@@ -50,10 +50,7 @@ internal static class SeedData
         Product(127, "Pen Set", 9.25m),
     ];
 
-    /// <summary>
-    /// 2–7 orders per customer, each with a random sales person and product.
-    /// Seeded, so the data is the same every run.
-    /// </summary>
+    /// <summary>2–7 random orders per customer; fixed seed, so every run is the same.</summary>
     public static IEnumerable<OrderEntity> Orders(
         IEnumerable<int> customerIds, IEnumerable<int> employeeIds, IEnumerable<int> productIds)
     {

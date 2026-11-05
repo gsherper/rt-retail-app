@@ -2,7 +2,6 @@ using Dashboard.Api.Common;
 
 namespace Dashboard.Api.Features.Products;
 
-/// <summary>A product as returned by the hub and REST and pushed in <c>ProductChanged</c> events.</summary>
 public sealed record ProductDto(
     int ProductID,
     string Name,
@@ -19,15 +18,14 @@ public sealed record CreateProductRequest(string? Name, decimal? Price)
     }
 }
 
-/// <summary>Version is the one the client last saw; a mismatch means someone else saved first.</summary>
+/// <summary>Version is the one the client last saw; a mismatch is a 409.</summary>
 public sealed record UpdateProductRequest(string? Name, decimal? Price, long? Version)
 {
     public Dictionary<string, string[]> Validate()
     {
         var errors = new ValidationErrors();
         ProductRules.Validate(errors, Name, Price);
-        if (Version is null)
-            errors.Add("version", "Version is required.");
+        errors.RequiredVersion(Version);
         return errors.ToDictionary();
     }
 }

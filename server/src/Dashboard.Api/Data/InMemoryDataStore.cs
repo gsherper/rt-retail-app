@@ -3,10 +3,8 @@ using Dashboard.Api.Data.Entities;
 namespace Dashboard.Api.Data;
 
 /// <summary>
-/// All data, held in memory for the server's lifetime. Starts from
-/// <see cref="SeedData"/> and resets when the server restarts.
-/// Callers hold <see cref="Sync"/> for the whole read or write, so each one
-/// sees and leaves the data consistent.
+/// All data, starting from <see cref="SeedData"/> and reset on restart. Hold
+/// <see cref="Sync"/> for every whole read or write.
 /// </summary>
 public sealed class InMemoryDataStore
 {
@@ -45,9 +43,8 @@ public sealed class InMemoryDataStore
     public Dictionary<int, OrderEntity> Orders { get; }
 
     /// <summary>
-    /// A new row version, higher than any before it. One shared counter, so a
-    /// delete's version is always newer than the row's last update, and an order
-    /// row's version moves when anything it shows changes.
+    /// One counter for all rows, so versions only go up and an order row's version moves
+    /// when anything it shows changes.
     /// </summary>
     public long NextVersion() => ++_version;
 

@@ -2,7 +2,6 @@ using Dashboard.Api.Common;
 
 namespace Dashboard.Api.Features.Employees;
 
-/// <summary>An employee as returned by the hub and REST and pushed in <c>EmployeeChanged</c> events.</summary>
 public sealed record EmployeeDto(
     int EmployeeID,
     string FirstName,
@@ -20,7 +19,7 @@ public sealed record CreateEmployeeRequest(string? FirstName, string? MiddleInit
     }
 }
 
-/// <summary>Version is the one the client last saw; a mismatch means someone else saved first.</summary>
+/// <summary>Version is the one the client last saw; a mismatch is a 409.</summary>
 public sealed record UpdateEmployeeRequest(
     string? FirstName,
     string? MiddleInitial,
@@ -31,8 +30,7 @@ public sealed record UpdateEmployeeRequest(
     {
         var errors = new ValidationErrors();
         PersonNameRules.Validate(errors, FirstName, MiddleInitial, LastName);
-        if (Version is null)
-            errors.Add("version", "Version is required.");
+        errors.RequiredVersion(Version);
         return errors.ToDictionary();
     }
 }

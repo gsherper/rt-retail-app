@@ -11,7 +11,6 @@ public sealed class ProductService(
     IChangePublisher publisher,
     ILogger<ProductService> logger)
 {
-    /// <summary>Every product, sorted by ID: the hub subscribe's initial list and the REST list.</summary>
     public Task<IReadOnlyList<ProductDto>> GetAllAsync(CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
@@ -78,15 +77,12 @@ public sealed class ProductService(
         logger.LogInformation("Updated product {ProductID} to version {Version}", productId, updated.Version);
         await publisher.ProductChangedAsync(
             ChangeEvent<ProductDto>.Updated(productId, updated.Version, updated));
-        // Order rows show the product name and a total from its price
+        // Order rows show its name and a total from its price
         await publisher.OrdersUpdatedAsync(ordersShowingProduct);
         return WriteResult<ProductDto>.Ok(updated);
     }
 
-    /// <summary>
-    /// In use when any order is for this product. When expectedVersion is given
-    /// and doesn't match, the result is a conflict.
-    /// </summary>
+    /// <summary>InUse while any order uses this product. Conflict when expectedVersion is given and doesn't match.</summary>
     public async Task<WriteStatus> DeleteAsync(int productId, long? expectedVersion, CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();

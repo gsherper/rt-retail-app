@@ -2,7 +2,6 @@ using Dashboard.Api.Common;
 
 namespace Dashboard.Api.Features.Customers;
 
-/// <summary>A customer as returned by the hub and REST and pushed in <c>CustomerChanged</c> events.</summary>
 public sealed record CustomerDto(
     int CustomerID,
     string FirstName,
@@ -20,7 +19,7 @@ public sealed record CreateCustomerRequest(string? FirstName, string? MiddleInit
     }
 }
 
-/// <summary>Version is the one the client last saw; a mismatch means someone else saved first.</summary>
+/// <summary>Version is the one the client last saw; a mismatch is a 409.</summary>
 public sealed record UpdateCustomerRequest(
     string? FirstName,
     string? MiddleInitial,
@@ -31,8 +30,7 @@ public sealed record UpdateCustomerRequest(
     {
         var errors = new ValidationErrors();
         PersonNameRules.Validate(errors, FirstName, MiddleInitial, LastName);
-        if (Version is null)
-            errors.Add("version", "Version is required.");
+        errors.RequiredVersion(Version);
         return errors.ToDictionary();
     }
 }

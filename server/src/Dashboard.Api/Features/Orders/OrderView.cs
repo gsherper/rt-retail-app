@@ -3,11 +3,7 @@ using Dashboard.Api.Data.Entities;
 
 namespace Dashboard.Api.Features.Orders;
 
-/// <summary>
-/// Builds <see cref="OrderDto"/> rows, which show the customer, sales person
-/// and product names and the order total alongside the order. Call while
-/// holding the store's lock.
-/// </summary>
+/// <summary>Builds <see cref="OrderDto"/> rows. Call while holding store.Sync.</summary>
 internal static class OrderView
 {
     public static OrderDto Build(InMemoryDataStore store, OrderEntity order)
@@ -22,14 +18,13 @@ internal static class OrderView
             new OrderSalesPersonDto(salesPerson.Id, salesPerson.FirstName, salesPerson.MiddleInitial, salesPerson.LastName),
             new OrderProductDto(product.Id, product.Name),
             order.Quantity,
-            // Prices have at most 2 decimal places, so this is exact to the cent
+            // Prices have at most 2 decimals, so this is exact
             product.Price * order.Quantity,
-            // Versions come from one shared counter, so the highest one changes
-            // whenever anything shown in the row does
+            // One shared counter, so the max moves when anything in the row changes
             Math.Max(Math.Max(order.Version, customer.Version), Math.Max(salesPerson.Version, product.Version)));
     }
 
-    /// <summary>Order rows showing a customer, employee or product that changed, to push as updates.</summary>
+    /// <summary>Rows to push after a customer, employee or product changes.</summary>
     public static List<OrderDto> BuildWhere(InMemoryDataStore store, Func<OrderEntity, bool> predicate) =>
         store.Orders.Values.Where(predicate).OrderBy(o => o.Id).Select(o => Build(store, o)).ToList();
 }

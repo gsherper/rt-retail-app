@@ -4,15 +4,15 @@ public enum WriteStatus
 {
     Ok,
     NotFound,
-    /// <summary>The caller's version is out of date; someone else changed the row first.</summary>
+    /// <summary>The caller's version is stale.</summary>
     Conflict,
-    /// <summary>Failed a check that needs current data, such as a reference to a row that doesn't exist.</summary>
+    /// <summary>Refers to a row that doesn't exist.</summary>
     Invalid,
-    /// <summary>Other rows still refer to this one, so it can't be deleted.</summary>
+    /// <summary>Other rows still refer to it.</summary>
     InUse,
 }
 
-/// <summary>Outcome of a service write, so expected failures don't need exceptions.</summary>
+/// <summary>A service write's outcome; expected failures don't throw.</summary>
 public sealed record WriteResult<T>(
     WriteStatus Status,
     T? Value = default,

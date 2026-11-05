@@ -1,6 +1,6 @@
 namespace Dashboard.Api.Common;
 
-/// <summary>First name, middle initial and last name rules shared by customers and employees.</summary>
+/// <summary>Name rules shared by customers and employees.</summary>
 public static class PersonNameRules
 {
     public const int MaxNameLength = 50;

@@ -10,7 +10,6 @@ public sealed class OrderService(
     IChangePublisher publisher,
     ILogger<OrderService> logger)
 {
-    /// <summary>Every order, sorted by ID: the hub subscribe's initial list and the REST list.</summary>
     public Task<IReadOnlyList<OrderDto>> GetAllAsync(CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
@@ -21,10 +20,7 @@ public sealed class OrderService(
         }
     }
 
-    /// <summary>
-    /// Every order for one customer, sorted by ID: the hub subscribe's initial
-    /// list and the REST list. Null when the customer doesn't exist.
-    /// </summary>
+    /// <summary>Null when the customer doesn't exist.</summary>
     public Task<IReadOnlyList<OrderDto>?> GetAllForCustomerAsync(int customerId, CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
@@ -51,10 +47,7 @@ public sealed class OrderService(
         }
     }
 
-    /// <summary>
-    /// Not found when the customer doesn't exist; invalid when the sales person
-    /// or product doesn't.
-    /// </summary>
+    /// <summary>NotFound: no such customer. Invalid: no such sales person or product.</summary>
     public async Task<WriteResult<OrderDto>> CreateAsync(
         int customerId, CreateOrderRequest request, CancellationToken ct)
     {
@@ -87,9 +80,8 @@ public sealed class OrderService(
     }
 
     /// <summary>
-    /// Invalid when the sales person or product doesn't exist. The version is
-    /// the row's (see <see cref="OrderDto"/>), so renaming its customer, sales
-    /// person or product since the client loaded it is also a conflict.
+    /// Invalid: no such sales person or product. Checks the row's version (see
+    /// <see cref="OrderView"/>), so a change to anything the row shows is also a conflict.
     /// </summary>
     public async Task<WriteResult<OrderDto>> UpdateAsync(
         int orderId, UpdateOrderRequest request, CancellationToken ct)
@@ -118,10 +110,7 @@ public sealed class OrderService(
         return WriteResult<OrderDto>.Ok(updated);
     }
 
-    /// <summary>
-    /// When expectedVersion is given and doesn't match the row's version,
-    /// nothing is deleted and the result is a conflict.
-    /// </summary>
+    /// <summary>Conflict when expectedVersion is given and isn't the row's version.</summary>
     public async Task<WriteStatus> DeleteAsync(int orderId, long? expectedVersion, CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
@@ -144,8 +133,7 @@ public sealed class OrderService(
         return WriteStatus.Ok;
     }
 
-    // Like foreign keys: an order must point at an existing employee and
-    // product. Call while holding store.Sync.
+    // Foreign-key checks. Call while holding store.Sync.
     private Dictionary<string, string[]>? MissingReferences(int salesPersonId, int productId)
     {
         var errors = new ValidationErrors();
@@ -153,11 +141,9 @@ public sealed class OrderService(
             errors.Add("salesPersonID", $"Employee {salesPersonId} doesn't exist.");
         if (!store.Products.ContainsKey(productId))
             errors.Add("productID", $"Product {productId} doesn't exist.");
-
-        var result = errors.ToDictionary();
-        return result.Count > 0 ? result : null;
+        return errors.HasErrors ? errors.ToDictionary() : null;
     }
 
-    // Call while holding store.Sync
+    // Call while holding store.Sync.
     private OrderDto ToDto(OrderEntity entity) => OrderView.Build(store, entity);
 }

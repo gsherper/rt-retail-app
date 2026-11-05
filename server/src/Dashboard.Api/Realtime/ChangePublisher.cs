@@ -6,17 +6,14 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Dashboard.Api.Realtime;
 
-/// <summary>Pushes committed changes to the matching topic. Call only after the write is saved.</summary>
+/// <summary>Pushes changes to their topics. Call only after the write is saved.</summary>
 public interface IChangePublisher
 {
     Task CustomerChangedAsync(ChangeEvent<CustomerDto> change);
 
     Task OrderChangedAsync(int customerId, ChangeEvent<OrderDto> change);
 
-    /// <summary>
-    /// Sends an <c>updated</c> event for each order row, for when a customer,
-    /// employee or product shown in those rows was renamed.
-    /// </summary>
+    /// <summary>Pushes <c>updated</c> for order rows whose customer, employee or product changed.</summary>
     Task OrdersUpdatedAsync(IReadOnlyList<OrderDto> orders);
 
     Task EmployeeChangedAsync(ChangeEvent<EmployeeDto> change);
@@ -24,8 +21,7 @@ public interface IChangePublisher
     Task ProductChangedAsync(ChangeEvent<ProductDto> change);
 }
 
-// No CancellationToken on purpose: the write is already committed, so the event
-// must go out even if the request that caused it is cancelled.
+// No CancellationToken: the write is saved, so its event must go out even if the request is cancelled
 public sealed class ChangePublisher(
     IHubContext<DashboardHub, IDashboardClient> hub,
     ILogger<ChangePublisher> logger) : IChangePublisher
@@ -34,8 +30,7 @@ public sealed class ChangePublisher(
         SendAsync(Topics.Customers, change.Type, change.Id, () =>
             hub.Clients.Group(Topics.Customers).CustomerChanged(change));
 
-    // A client subscribed to both topics can get the event twice; it drops the
-    // second one because the version is no newer than what it already applied
+    // A client on both topics gets the event twice and drops the second by version
     public Task OrderChangedAsync(int customerId, ChangeEvent<OrderDto> change) =>
         Task.WhenAll(
             SendAsync(Topics.Orders, change.Type, change.Id, () =>
@@ -68,8 +63,7 @@ public sealed class ChangePublisher(
         }
         catch (Exception ex)
         {
-            // The write succeeded, so don't fail the request. Clients catch up on
-            // their next reload or reconnect.
+            // Don't fail a saved write; clients catch up when they resubscribe
             logger.LogError(ex, "Failed to publish {ChangeType} for {Id} to {Topic}", type, id, topic);
         }
     }

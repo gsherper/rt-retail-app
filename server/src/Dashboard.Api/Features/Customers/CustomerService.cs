@@ -11,7 +11,6 @@ public sealed class CustomerService(
     IChangePublisher publisher,
     ILogger<CustomerService> logger)
 {
-    /// <summary>Every customer, sorted by ID: the hub subscribe's initial list and the REST list.</summary>
     public Task<IReadOnlyList<CustomerDto>> GetAllAsync(CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
@@ -84,15 +83,12 @@ public sealed class CustomerService(
         return WriteResult<CustomerDto>.Ok(updated);
     }
 
-    /// <summary>
-    /// Deletes the customer and their orders. When expectedVersion is given and
-    /// doesn't match, nothing is deleted and the result is a conflict.
-    /// </summary>
+    /// <summary>Also deletes their orders. Conflict when expectedVersion is given and doesn't match.</summary>
     public async Task<WriteStatus> DeleteAsync(int customerId, long? expectedVersion, CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
         ChangeEvent<CustomerDto> customerDeleted;
-        List<ChangeEvent<OrderDto>> ordersDeleted;
+        List<ChangeEvent<OrderDto>> ordersDeleted = [];
         lock (store.Sync)
         {
             if (!store.Customers.TryGetValue(customerId, out var entity))
@@ -100,15 +96,10 @@ public sealed class CustomerService(
             if (expectedVersion is not null && entity.Version != expectedVersion)
                 return WriteStatus.Conflict;
 
-            var orderIds = store.Orders.Values
-                .Where(o => o.CustomerId == customerId)
-                .Select(o => o.Id)
-                .ToList();
-            ordersDeleted = [];
-            foreach (var orderId in orderIds)
+            foreach (var order in store.Orders.Values.Where(o => o.CustomerId == customerId).ToList())
             {
-                store.Orders.Remove(orderId);
-                ordersDeleted.Add(ChangeEvent<OrderDto>.Deleted(orderId, store.NextVersion()));
+                store.Orders.Remove(order.Id);
+                ordersDeleted.Add(ChangeEvent<OrderDto>.Deleted(order.Id, store.NextVersion()));
             }
 
             store.Customers.Remove(customerId);

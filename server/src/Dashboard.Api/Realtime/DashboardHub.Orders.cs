@@ -25,7 +25,7 @@ public sealed partial class DashboardHub
         if (await _orders.GetAllForCustomerAsync(customerId, Aborted) is { } list)
             return HubResult<IReadOnlyList<OrderDto>>.Success(list);
 
-        // Unknown customer: don't leave the caller in a group nothing will publish to
+        // Unknown customer: leave the group again
         await UnsubscribeAsync(topic);
         return HubResult<IReadOnlyList<OrderDto>>.Failure(HubError.NotFound(Customer));
     }

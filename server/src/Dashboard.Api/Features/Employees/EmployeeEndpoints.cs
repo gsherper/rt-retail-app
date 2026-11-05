@@ -47,7 +47,7 @@ public static class EmployeeEndpoints
             };
         });
 
-        // ?version= is optional; when sent, the delete only happens if it still matches
+        // Optional ?version=: deletes only if it still matches
         employees.MapDelete("/{employeeId:int}", async Task<Results<NoContent, NotFound, ProblemHttpResult>> (
             int employeeId, long? version, EmployeeService service, CancellationToken ct) =>
             await service.DeleteAsync(employeeId, version, ct) switch

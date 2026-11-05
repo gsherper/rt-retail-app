@@ -2,10 +2,7 @@ using Dashboard.Api.Common;
 
 namespace Dashboard.Api.Realtime;
 
-/// <summary>
-/// An expected failure from a hub method. Mirrors ProblemDetails, so the client
-/// handles hub errors and REST errors the same way.
-/// </summary>
+/// <summary>An expected hub failure, shaped like ProblemDetails.</summary>
 public sealed record HubError(
     int Status,
     string Title,
@@ -25,26 +22,26 @@ public sealed record HubError(
         new(StatusCodes.Status409Conflict, "In use", ProblemResults.InUseDetail(entityName));
 }
 
-/// <summary>Result of a hub method that returns data.</summary>
 public sealed record HubResult<T>(bool Ok, T? Data, HubError? Error)
 {
     public static HubResult<T> Success(T data) => new(true, data, null);
 
     public static HubResult<T> Failure(HubError error) => new(false, default, error);
 
-    /// <param name="notFoundEntity">What to call the missing thing in a 404.</param>
+    /// <param name="notFoundEntity">The entity named in a 404, if not <paramref name="entityName"/>.</param>
     public static HubResult<T> From(WriteResult<T> result, string entityName, string? notFoundEntity = null) =>
         result.Status switch
         {
             WriteStatus.Ok => Success(result.Value!),
             WriteStatus.NotFound => Failure(HubError.NotFound(notFoundEntity ?? entityName)),
+            WriteStatus.Conflict => Failure(HubError.Conflict(entityName)),
             WriteStatus.Invalid => Failure(HubError.Validation(result.Errors!)),
             WriteStatus.InUse => Failure(HubError.InUse(entityName)),
-            _ => Failure(HubError.Conflict(entityName)),
+            _ => throw new ArgumentOutOfRangeException(nameof(result), result.Status, null),
         };
 }
 
-/// <summary>Result of a hub method with no data, such as a delete.</summary>
+/// <summary>For hub methods with no data, such as deletes.</summary>
 public sealed record HubResult(bool Ok, HubError? Error)
 {
     public static readonly HubResult Success = new(true, null);
@@ -56,7 +53,8 @@ public sealed record HubResult(bool Ok, HubError? Error)
         {
             WriteStatus.Ok => Success,
             WriteStatus.NotFound => Failure(HubError.NotFound(entityName)),
+            WriteStatus.Conflict => Failure(HubError.Conflict(entityName)),
             WriteStatus.InUse => Failure(HubError.InUse(entityName)),
-            _ => Failure(HubError.Conflict(entityName)),
+            _ => throw new ArgumentOutOfRangeException(nameof(status), status, null),
         };
 }

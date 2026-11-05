@@ -4,7 +4,8 @@ Persistence: none; all data is held in memory and resets when the server restart
 APIs:
 - SignalR hub at `/hub`: the client API. The React client does all CRUD over it (lists, single rows, creates, updates, deletes) and receives live updates
 - REST (Minimal APIs) at `/api`: the same operations, for debugging and verification (browser, curl). The React client never calls it
-Runs on http://localhost:5000; the ui dev server proxies `/api` and `/hub` here.
+- Swagger page at `/swagger` for trying the REST endpoints, built from the OpenAPI description at `/openapi/v1.json` (Microsoft.AspNetCore.OpenApi + Swashbuckle.AspNetCore.SwaggerUI). Development only; the hub isn't in it
+Runs on http://localhost:5001; the ui dev server (http://localhost:5000) proxies `/hub` here.
 
 # Commands
 Run from `server/`:
@@ -18,7 +19,7 @@ Run from `server/`:
 server/
 ├── Dashboard.sln
 ├── src/Dashboard.Api/
-│   ├── Program.cs                  # DI, middleware, MapGroup("/api"), MapHub("/hub")
+│   ├── Program.cs                  # DI, middleware, MapGroup("/api"), MapHub("/hub"), OpenAPI + Swagger (Development)
 │   ├── Features/
 │   │   ├── Customers/
 │   │   │   ├── CustomerEndpoints.cs    # MapCustomerEndpoints(this RouteGroupBuilder); debug REST

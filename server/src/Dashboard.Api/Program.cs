@@ -1,0 +1,54 @@
+using Dashboard.Api.Common;
+using Dashboard.Api.Data;
+using Dashboard.Api.Features.Customers;
+using Dashboard.Api.Features.Employees;
+using Dashboard.Api.Features.Orders;
+using Dashboard.Api.Features.Products;
+using Dashboard.Api.Realtime;
+
+var builder = WebApplication.CreateBuilder(args);
+
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+        policy.WithOrigins(allowedOrigins)
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              // SignalR's browser client sends credentials when it negotiates
+              .AllowCredentials());
+});
+
+builder.Services.AddProblemDetails();
+builder.Services.AddHealthChecks();
+builder.Services.AddSignalR(options => options.EnableDetailedErrors = builder.Environment.IsDevelopment());
+
+// All data lives here for the app's lifetime and resets on restart; see InMemoryDataStore
+builder.Services.AddSingleton<InMemoryDataStore>();
+builder.Services.AddSingleton<IChangePublisher, ChangePublisher>();
+builder.Services.AddScoped<CustomerService>();
+builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<EmployeeService>();
+builder.Services.AddScoped<ProductService>();
+
+var app = builder.Build();
+
+app.UseExceptionHandler();
+app.UseStatusCodePages();
+app.UseCors();
+
+var api = app.MapGroup("/api").DisableHttpCaching();
+api.MapGet("/hello", () => Results.Ok(new { message = "Hello, World!" }));
+api.MapCustomerEndpoints();
+api.MapOrderEndpoints();
+api.MapEmployeeEndpoints();
+api.MapProductEndpoints();
+
+app.MapHub<DashboardHub>(DashboardHub.Path);
+app.MapHealthChecks("/health");
+
+app.Run();
+
+// Lets the test project start the app with WebApplicationFactory<Program>
+public partial class Program;

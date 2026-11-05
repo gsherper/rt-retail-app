@@ -1,0 +1,10 @@
+# Built inside the image instead
+**/bin
+**/obj
+
+# Not needed to build
+.git
+.vs
+.vscode
+tests
+*.user

@@ -15,6 +15,6 @@ Double-clicking on customer row will take you to the Order list page filtered to
 
 Order List page, when new orders are added it will appear at the beginning fo the grid if OrderID is sort DESC
 
-All order form creation will prepopulate with default Sales Person DEFAULT_SALES_PERSON_ID 127 "David Cheung", but it can be changed by the user when they fill out the form.
+All order form creation will prepopulate with default Sales Person DEFAULT_SALES_PERSON_ID 127 "Adam Smith", but it can be changed by the user when they fill out the form.
 
 If at any time another user is using the app changes a customer name and you have an order form in progress, the customer name will update.

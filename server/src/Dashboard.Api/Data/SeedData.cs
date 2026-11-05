@@ -35,7 +35,7 @@ internal static class SeedData
         Employee(124, "Nancy", "L", "Foster"),
         Employee(125, "Steven", null, "Price"),
         Employee(126, "Laura", "M", "Hughes"),
-        Employee(127, "David", null, "Cheung"),
+        Employee(127, "Adam", null, "Smith"),
     ];
 
     public static IEnumerable<ProductEntity> Products() =>

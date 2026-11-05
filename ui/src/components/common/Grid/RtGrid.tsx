@@ -115,6 +115,10 @@ export function RtGrid<T extends object, F extends object = T>({
 }: RtGridProps<T, F>) {
   const [filteredCount, setFilteredCount] = useState<number | undefined>()
   const [editState, setEditState] = useState<EditState<T>>(null)
+  // Goes up each time the form opens and is used as RtFormModal's key, so
+  // every opening gets a new form. antd's form keeps its values between
+  // openings otherwise, and they win over the new starting values
+  const [formSession, setFormSession] = useState(0)
   const [searchText, setSearchText] = useState('')
   const { message } = App.useApp()
 
@@ -132,9 +136,15 @@ export function RtGrid<T extends object, F extends object = T>({
     [formFields, isEditing],
   )
 
+  // Opens the add/edit form with a fresh form (see formSession)
+  const openForm = useCallback((state: NonNullable<EditState<T>>) => {
+    setFormSession((session) => session + 1)
+    setEditState(state)
+  }, [])
+
   const editRow = useCallback(
-    (row: T) => setEditState({ mode: 'edit', row }),
-    [],
+    (row: T) => openForm({ mode: 'edit', row }),
+    [openForm],
   )
 
   // Passed to values through the grid's context for RtGridRowActions buttons
@@ -221,7 +231,7 @@ export function RtGrid<T extends object, F extends object = T>({
         title={title}
         onSearch={setSearchText}
         searchPlaceholder={searchPlaceholder}
-        onAdd={() => setEditState({ mode: 'add' })}
+        onAdd={() => openForm({ mode: 'add' })}
         addLabel={`Add ${entityName}`}
       />
       <div className={styles.gridArea}>
@@ -247,6 +257,7 @@ export function RtGrid<T extends object, F extends object = T>({
         connectionStatus={connectionStatus}
       />
       <RtFormModal<F>
+        key={formSession}
         open={editState !== null}
         title={
           editState?.mode === 'edit'

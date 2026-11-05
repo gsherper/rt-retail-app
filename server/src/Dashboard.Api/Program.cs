@@ -5,6 +5,7 @@ using Dashboard.Api.Features.Employees;
 using Dashboard.Api.Features.Orders;
 using Dashboard.Api.Features.Products;
 using Dashboard.Api.Realtime;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,8 +34,20 @@ builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<EmployeeService>();
 builder.Services.AddScoped<ProductService>();
 
+// Behind Caddy: take the client IP, scheme and host from X-Forwarded-*. Loopback is
+// trusted by default; add any other proxy's network to ForwardedHeaders:KnownNetworks
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders =
+        ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+    foreach (var network in builder.Configuration.GetSection("ForwardedHeaders:KnownNetworks").Get<string[]>() ?? [])
+        options.KnownIPNetworks.Add(System.Net.IPNetwork.Parse(network));
+});
+
 var app = builder.Build();
 
+// First, so everything after it sees the client's values
+app.UseForwardedHeaders();
 app.UseExceptionHandler();
 app.UseStatusCodePages();
 app.UseCors();

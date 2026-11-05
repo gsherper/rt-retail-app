@@ -35,18 +35,21 @@ You need the .NET 10 SDK, Node.js 24 and pnpm.
 
 Start the server (runs on localhost:5001):
 
--cd server
--dotnet run --project src/Dashboard.Api
+cd server
+
+dotnet run --project src/Dashboard.Api
 
 
 In a second terminal, start the UI:
 
--cd ui
--pnpm install
--pnpm dev
+cd ui
+
+pnpm install
+
+pnpm dev
 
 
-Open http://localhost:5000  to see the application demo
+Open http://localhost:5000 to see the application demo
 
 Open http://localhost:5001/swagger
 

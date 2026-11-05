@@ -1,11 +1,16 @@
+# Published images (from .github/workflows/docker.yml):
+#   docker compose pull && docker compose up    uses ghcr.io's latest images
+#   docker compose up --build                   builds from this folder's source
 services:
   server:
-    # Listens on port 5001 (set in server/Dockerfile); the ui container proxies /hub to it
+    image: ghcr.io/gsherper/rt-retail-app-server:latest
     build: ./server
+    # Listens on port 5001 (set in server/Dockerfile); the ui container proxies /hub to it
     expose:
       - '5001'
 
   ui:
+    image: ghcr.io/gsherper/rt-retail-app-ui:latest
     build: ./ui
     # Open http://localhost:5000
     ports:

@@ -185,10 +185,9 @@ export function RtGrid<T extends object, F extends object = T>({
   const onCellDoubleClicked = useCallback(
     (params: CellDoubleClickedEvent<T>) => {
       if (!params.data || params.column.getColId() === ACTIONS_COL_ID) return
-      if (onRowDoubleClick) onRowDoubleClick(params.data)
-      else editRow(params.data)
+      onRowDoubleClick?.(params.data)
     },
-    [onRowDoubleClick, editRow],
+    [onRowDoubleClick],
   )
 
   // Populate form values for edit mode

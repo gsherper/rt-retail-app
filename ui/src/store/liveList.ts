@@ -66,17 +66,14 @@ export function createLiveList<T extends { version: number }, A = void>({
       arg: A,
       { update, cacheDataLoaded, cacheEntryRemoved }: SyncLifecycle<T>,
     ) {
-      console.log('sync')
       // After a reconnect the server has forgotten the subscription:
       // subscribe again and replace the list with the one returned
       const resync = async () => {
-        console.log('resync', arg)
         const result = await subscribe(arg)
         if ('data' in result) update(() => result.data)
         // The next reconnect triggers another resync, so just log
         else console.warn(`${name} resync failed`, result.error.data)
       }
-      console.log('resync defined')
 
       // Listen before the first load finishes so nothing is missed, but hold
       // changes until there's data to apply them to

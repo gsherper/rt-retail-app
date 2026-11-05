@@ -5,9 +5,14 @@ services:
   server:
     image: ghcr.io/gsherper/rt-retail-app-server:latest
     build: ./server
-    # Listens on port 5001 (set in server/Dockerfile); the ui container proxies /hub to it
-    expose:
-      - '5001'
+    environment:
+      # Turns on Swagger (/swagger) and SignalR's detailed errors, for debugging
+      # Left on Dev so review can explore and experiment with the demo
+      ASPNETCORE_ENVIRONMENT: Development
+    # Listens on port 5001 (set in server/Dockerfile). The ui container proxies
+    # /hub to it; publishing it also lets you open http://localhost:5001/swagger
+    ports:
+      - '5001:5001'
 
   ui:
     image: ghcr.io/gsherper/rt-retail-app-ui:latest

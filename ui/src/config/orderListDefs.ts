@@ -13,9 +13,9 @@ import type { Product } from '../models/Product'
 export const orderColumnDefs: ColDef<Order>[] = [
   {
     field: 'orderID',
-    headerName: 'Order',
+    headerName: 'OrderID',
     type: 'rightAligned',
-    width: 100,
+    width: 140,
     sort: 'desc',
   },
   {

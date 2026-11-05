@@ -24,14 +24,12 @@ export const customersApi = api.injectEndpoints({
       onCacheEntryAdded: (
         arg,
         { updateCachedData, cacheDataLoaded, cacheEntryRemoved },
-      ) => {
-        console.log('call sync')
-        return customersLive.sync(arg, {
+      ) =>
+        customersLive.sync(arg, {
           update: (recipe) => updateCachedData((draft) => recipe(draft)),
           cacheDataLoaded,
           cacheEntryRemoved,
-        })
-      },
+        }),
     }),
 
     addCustomer: build.mutation<Customer, CustomerInput>({

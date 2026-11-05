@@ -33,21 +33,16 @@ open browser right away.
 
 You need the .NET 10 SDK, Node.js 24 and pnpm.
 
-Start the server (runs on localhost:5001):
+1. **Start the API server** (runs on `http://localhost:5001`):
+   ```bash
+   cd server
+   dotnet run --project src/Dashboard.Api
 
-cd server
-
-dotnet run --project src/Dashboard.Api
-
-
-In a second terminal, start the UI:
-
-cd ui
-
-pnpm install
-
-pnpm dev
-
+2. **Start the UI dev server** (runs on `http://localhost:5000`):
+   ```bash
+   cd ui
+   pnpm install
+   pnpm dev
 
 Open http://localhost:5000 to see the application demo
 

@@ -46,7 +46,9 @@ pnpm install
 pnpm dev
 
 
-Open http://localhost:5000
+Open http://localhost:5000  to see the application demo
+
+Open http://localhost:5001/swagger
 
 ## Run with Docker
 

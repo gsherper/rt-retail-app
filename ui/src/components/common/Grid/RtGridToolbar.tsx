@@ -22,19 +22,21 @@ export function RtGridToolbar({
   return (
     <div className={styles.toolbar}>
       <Text className={styles.title}>{title}</Text>
-      {onSearch && (
-        <Input
-          className={styles.search}
-          prefix={<SearchOutlined />}
-          placeholder={searchPlaceholder}
-          allowClear
-          onChange={(e) => onSearch(e.target.value)}
-        />
-      )}
-      <div className={styles.actions}>
-        <Button type="link" icon={<PlusOutlined />} onClick={onAdd}>
-          {addLabel}
-        </Button>
+      <div className={styles.controls}>
+        {onSearch && (
+          <Input
+            className={styles.search}
+            prefix={<SearchOutlined />}
+            placeholder={searchPlaceholder}
+            allowClear
+            onChange={(e) => onSearch(e.target.value)}
+          />
+        )}
+        <div className={styles.actions}>
+          <Button type="link" icon={<PlusOutlined />} onClick={onAdd}>
+            {addLabel}
+          </Button>
+        </div>
       </div>
     </div>
   )
